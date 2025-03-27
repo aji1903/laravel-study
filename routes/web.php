@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Route;
 // *1
 use App\Http\Controllers\BelajarController;
 use App\Http\Controllers\LoginController;
-
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,6 +25,14 @@ Route::get('kurang', [BelajarController::class, 'kurang']);
 Route::get('bagi', [BelajarController::class, 'bagi']);
 Route::get('kali', [BelajarController::class, 'kali']);
 Route::get('login', [LoginController::class, 'login']);
+
+// resource dapat mengcover post get delete
+Route::resource('dashboard', DashboardController::class);
+Route::resource('categories', CategoriesController::class);
+Route::resource('user', UserController::class);
+
+
+
 
 
 
