@@ -39,6 +39,7 @@
 </head>
 
 <body>
+    @include('sweetalert::alert')
 
 @include('layouts.inc.header')
  @include('layouts.inc.sidebar')
@@ -81,7 +82,30 @@
 
   <!-- Template Main JS File -->
   <script src="{{ asset('assets/js/main.js') }}"></script>
+  @include('sweetalert::alert', ['cdn' => "https://cdn.jsdelivr.net/npm/sweetalert2@9"])
+{{--  dibawah ini contoh sweetalert menggunakan cdn  --}}
+  <!-- SweetAlert2 CDN -->
+{{--  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+@if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil BROOO!',
+        text: '{{ session('success') }}',
+    });
+</script>
+@endif
+
+@if(session('update'))
+<script>
+    Swal.fire({
+        icon: 'update',
+        title: 'Berhasil BROOO!',
+        text: '{{ session('update') }}',
+    });
+</script>
+@endif  --}}
 </body>
 
 </html>

@@ -9,6 +9,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +30,8 @@ Route::get('login', [LoginController::class, 'login']);
 
 // resource dapat mengcover post get delete
 Route::resource('dashboard', DashboardController::class);
+Route::resource('product', ProductController::class);
+
 Route::resource('categories', CategoriesController::class);
 Route::resource('user', UserController::class);
 
