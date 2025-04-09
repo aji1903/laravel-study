@@ -3,25 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categories;
-
+use App\Models\Orders;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use RealRashid\SweetAlert\Facades\Alert;
 
-class ProductController extends Controller
+class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $title = 'Data Product';
+        $title = 'Order';
         // select * from products LEFT JOIN categories ON categories.id = products.category_id
         // ORM = Object Relation Mapp
-        $datas = Products::with('category')->get();
+        $datas = Orders::orderBy('id', 'desc')->get();
 
-        return view('product.index', compact('title', 'datas'));
+        return view('pos.index', compact('title', 'datas'));
     }
 
     /**
@@ -31,7 +31,7 @@ class ProductController extends Controller
     {
         // select * from categories order by id desc
         $categories = Categories::orderBy('id', 'desc')->get();
-        return view('product.create', compact('categories'));
+        return view('pos.create', compact('categories'));
     }
 
     /**
@@ -129,5 +129,11 @@ class ProductController extends Controller
         return redirect()->to('product');
 
         // return redirect()->to('product')->with('success', 'Data Berhasil Dihapus');
+    }
+    public function getProduct($category_id)
+    {
+        $product = Products::where('category_id', $category_id)->get();
+        $response = ['status' => 'success', 'message' => 'Fetch Product Success', 'data' => $product];
+        return response()->json($response, 200);
     }
 }

@@ -10,7 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
-
+use App\Http\Controllers\TransactionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -34,6 +34,8 @@ Route::resource('product', ProductController::class);
 
 Route::resource('categories', CategoriesController::class);
 Route::resource('user', UserController::class);
+route::resource('pos',TransactionController::class);
+route::get('get-product/{id}',[TransactionController::class,'getProduct']);
 
 
 
