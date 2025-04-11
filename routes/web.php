@@ -34,8 +34,10 @@ Route::resource('product', ProductController::class);
 
 Route::resource('categories', CategoriesController::class);
 Route::resource('user', UserController::class);
-route::resource('pos',TransactionController::class);
-route::get('get-product/{id}',[TransactionController::class,'getProduct']);
+route::resource('pos', TransactionController::class);
+
+route::get('print/{id}', [TransactionController::class, 'print'])->name('print');
+route::get('get-product/{id}', [TransactionController::class, 'getProduct']);
 
 
 

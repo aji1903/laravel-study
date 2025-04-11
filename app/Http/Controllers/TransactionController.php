@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Categories;
 use App\Models\Orders;
+
+use App\Models\Orders_Details;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -40,25 +42,35 @@ class TransactionController extends Controller
     // categories.store untuk insert data
     public function store(Request $request)
     {
+        // ORD-100425001
+        $qOrderCode = Orders::max('id');
+        $qOrderCode++;
+        $orderCode = 'ORD-' . date("dmY") . sprintf("%03d", $qOrderCode);
         $data = [
-            'category_id' => $request->category_id,
-            'product_name' => $request->product_name,
-            'product_price' => $request->product_price,
-            'product_description' => $request->product_description,
-            'is_active' => $request->is_active
+            'order_code' => $orderCode,
+            'order_date' => date("Y-m-d"),
+            'order_amount' => $request->grandtotal,
+            'order_change' => 1,
+            'order_status' => 1,
         ];
+        $order = Orders::create($data);
+        $qty = $request->qty;
+        foreach ($qty as $key => $data) {
+            Orders_Details::create([
+                'order_id' => $order->id,
+                'product_id' => $request->product_id[$key],
+                'qty' => $request->qty[$key],
+                'order_price' => $request->order_price[$key],
+                'order_subtotal' => $request->order_subtotal[$key],
+            ]);
+        }
         // hasFile
         // !empty()
         // $_FILES, $request->file
-        if ($request->hasFile('product_photo')) {
-            $photo = $request->file('product_photo')->store('product', 'public');
-            $data['product_photo'] = $photo;
-            # code...
-        }
-        Products::create($data);
-        Alert::success('Success', 'Add Product Successfully');
 
-        return redirect()->to('product')->with('success', 'Tambah Produk Berhasil');
+        Alert::success('Success', 'Add Pos Product Successfully');
+
+        return redirect()->to('pos')->with('success', 'Tambah Pos Produk Berhasil');
     }
 
     /**
@@ -66,7 +78,17 @@ class TransactionController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $orders = Orders::findOrFail($id);
+        $orderDetails = Orders_Details::with('product')->where('order_id', $id)->get();
+        $title =   "Order Details Of = " . $orders->order_code;
+        return view('pos.show', compact('orders', 'orderDetails', 'title'));
+    }
+    public function print($id)
+    {
+        $orders = Orders::findOrFail($id);
+        $orderDetails = Orders_Details::with('product')->where('order_id', $id)->get();
+
+        return view('pos.print-struk', compact('orders', 'orderDetails'));
     }
 
     /**

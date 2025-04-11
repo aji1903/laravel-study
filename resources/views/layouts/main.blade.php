@@ -119,12 +119,22 @@
             });
 
         });
+
+        function formatRupiah(number) {
+            const formatted = number.toLocaleString("id", {
+                minimunFractionDigits: 0,
+                maximumFractionDigits: 0,
+            });
+            return formatted;
+        }
         $('.add-row').click(function() {
             let tbody = $('tbody');
             let selectedOption = $('#product_id').find('option:selected');
-            let namaProduk = $('#product_id').find('option:selected').text()
+            let namaProduk = selectedOption.text();
+            let productId = selectedOption.val();
             let photoProduct = selectedOption.data('img');
-            let productPrice = selectedOption.data('price');
+            let productPrice = parseInt(selectedOption.data('price')) || 0;
+
 
             if ($('#category_id').val() == '') {
                 alert('category required');
@@ -134,16 +144,49 @@
                 alert('product required');
                 return false;
             }
-            let newRow = `<tr>`;
-            newRow += `<td><img src='' alt='Ini gambar'></td>`
-            newRow += `<td>${namaProduk}</td>`
-            newRow += `<td><input type='number' name='qty[]'></td></td>`
-            newRow += `<td>${productPrice}</td>`
+            let newRow = `<tr class='remove-row'>`;
+            newRow += `<td><img src='{{ asset('storage/') }}/${photoProduct}' width='60' alt='Ini gambar'></td>`
+            newRow += `<td>${namaProduk}<input type='hidden' name='product_id[]'value='${productId}'>  </td>`
+            newRow += `<td width='110px'><input type='number' value='1' class='qty form-control' name='qty[]'></td>`
+            newRow +=
+                `<td><input type='hidden' name='order_price[]'value='${productPrice}'><span class='price' data-price=${productPrice}></span>RP ${formatRupiah(productPrice)}</td>`
+            newRow +=
+                `<td><input class='subtotal_input'type='hidden' name='order_subtotal[]'value='${productPrice}'>RP <span class='subtotal'>${formatRupiah(productPrice)}</span></td>`
+            newRow += `<td><button type='button' class='btn btn-danger btn-sm removeBtn'>Remove</button></td>`
             newRow += `</tr>`;
 
             tbody.append(newRow);
+            // calculateSubTotal;
             clearAll();
+
+            $('.qty').off().on('input', function() {
+                let row = $(this).closest('tr');
+                let qty = parseInt($(this).val()) || 0;
+                let price = parseInt(row.find('.price').data('price')) || 0;
+                let total = qty * price;
+                row.find('.subtotal').text(formatRupiah(total));
+                row.find('.subtotal_input').val(total);
+
+                calculateSubTotal();
+
+            })
+            calculateSubTotal();
         });
+
+        function calculateSubTotal() {
+            let grandtotal = 0;
+            $('.subtotal').each(function() {
+                let total = parseInt($(this).text().replace(/\./g, ''));
+                grandtotal += total;
+                // console.log("total", total);
+            });
+            // console.log(grandtotal);
+
+            $('.grandtotal').text(formatRupiah(grandtotal));
+            $('input[name="grandtotal"]').val(grandtotal);
+
+        }
+
 
         function clearAll() {
             $('#category_id').val('');
@@ -156,6 +199,12 @@
         $('.select2').ready(function() {
             $('.js-example-basic-multiple').select2();
         });
+
+        $('.remove-row').on('click', '.removeBtn', function() {
+            let rowToRemove = $(this).closest('tr');
+            rowToRemove.remove();
+            console.log(rowToRemove);
+        })
     </script>
 
     {{--  dibawah ini contoh sweetalert menggunakan cdn  --}}
